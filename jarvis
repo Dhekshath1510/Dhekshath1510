@@ -1,0 +1,203 @@
+import pyttsx3
+import speech_recognition as sr
+import datetime
+import time
+import random 
+import os 
+import requests 
+import webbrowser
+import wikipedia
+import pywhatkit
+import pyautogui
+import sys
+
+#---------------speaking----------------------
+def speak(audio): 
+    eng = pyttsx3.init('sapi5')
+    voices = eng.getProperty('voices')
+    eng.setProperty('voices', voices[1].id)
+    eng.say(audio) 
+    eng.runAndWait() 
+    print(audio)
+#--------------to take screenshot--------------
+def screen_shot():
+    speak(",sir, please tell me the name of the sceenshot")
+    name=takecommand()
+    #speak("how much second do you need")
+    #t=int(input())
+    speak("i am taking screenshot....")
+    #time.sleep(t)
+    img = pyautogui.screenshot()
+    img.save(f'{name}.png') 
+    speak(",i am done sir")
+#-------------sending mesg in whatsapp----------
+def whatsapp():
+    speak("opening whatsapp...")
+    webbrowser.open("web.whatsapp.com")
+def what_msg():
+    speak("enter the number")
+    no=input()
+    speak("tell me the message")
+    msg=takecommand()
+    speak("please specify the time")
+    h=int(input("enter the hour:"))
+    m=int(input("enter the minute:"))
+    pywhatkit.sendwhatmsg(no,msg,h,m)
+
+#-------------------browser--------------------
+def youtube():
+    speak("opening youtube...")
+    webbrowser.open("www.youtube.com")
+
+def google():
+    speak("opening google...")
+    webbrowser.open("www.google.com")
+def gmail():
+    speak("opening gmail...")
+    webbrowser.open("www.gmail.com")
+def chrome():
+    speak(" ,what should I search on google, sir")
+    qu = takecommand().lower()
+    webbrowser.open(qu)
+def map():
+    speak("opening google map...")
+    webbrowser.open("www.googlemaps.com")
+def facebook():
+    speak("opening facebook...")
+    webbrowser.open("www.facebook.com")
+#---------------------wikipedia---------------------
+def wiki():
+    speak("what do you want to search on wikipedia")
+    qn = takecommand().lower()
+    result = wikipedia.summary(qn,sentences=2)
+    speak("According to wikipedia"+result)
+
+#--------------music--------------------------
+def music():
+    music_dir="D:\music"
+    songs=os.listdir(music_dir)
+    rd=random.choice(songs)
+    os.startfile(os.path.join(music_dir,rd))
+#----------notepad section--------------------
+def notepad():
+    speak("opening notepad...")
+    os.system('start notepad')
+def close_notepad():
+    speak("closing notepad...")
+    os.system("taskkill /f /im notepad.exe")
+#----------------explorer---------------------
+def exp():
+    speak("opening explorer...")
+    os.system("explorer")
+def close_exp():
+    speak("closing explorer...")
+    os.system("taskkill /f /im explorer.exe")
+#----------command prompt--------------------
+def cmd():
+    speak("opening command prompt...")
+    os.system('start cmd')
+def close_cmd():
+    speak("closing command prompt...")
+    os.system("taskkill /f /im cmd.exe ")
+#-------------listening---------------------
+def takecommand():
+    r=sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...") 
+        r.pause_threshold=1
+        audio = r.listen(source,timeout=60,phrase_time_limit=60)
+
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio,language='en-in')
+        print(f"User said: {query}")
+
+    except:
+        speak(",I am just leaving now, If you need any help, run this program again...")
+        sys.exit()
+    return 0
+#----------------ipaddress----------------------
+def ip_address():
+    ip = requests.get("https://api.ipify.org").text
+    speak("your IP address is..."+ip)
+#-------------------wishing with time----------
+def wish():
+    hour = int(datetime.datetime.now().hour)
+    tt = time.strftime("%I %M %p")
+    if hour >=0 and hour<12:
+        a="Good morning sir","hello sir","hello sir, hope you are fine","good morning "
+        speak(random.choice(a)+" it is"+tt)
+    elif hour>=12 and hour<14:
+        a="Good afternoon sir","hello sir","hi sir, hope you are fine","good afternoon "
+        speak(random.choice(a)+" it is"+tt)
+    elif hour>=14:
+        a="Good evening sir","hello sir","hi sir, hope you are fine","good evening "
+        speak(random.choice(a)+" it is"+tt)
+    
+    b="how may i help you sir"," Give me a command sir","online and ready sir"
+    speak(" I am jarvis, "+ random.choice(b))
+#----------------------------stop-------------------
+def stop():
+    speak(",ok sir,we will meet you soon")
+    speak(",have a great day")
+    sys.exit()
+#-------------------------------------main------------------------------------------------
+if __name__=="__main__":
+    wish() 
+    while True:   
+        query = takecommand().lower()
+        
+        if "open notepad" in query:
+            notepad()
+            
+        elif "close notepad" in query:
+            close_notepad()
+
+        elif "hi iris" or "hello iris" in query:
+            speak(", hello sir, what you need...")
+             
+        elif "ip address" in query:
+            ip_address()
+            
+        elif "open explorer" in query:
+            exp()
+            
+        elif "close explorer" in query:
+            close_exp()
+            
+        elif "open command prompt" in query:
+            cmd()
+            
+        elif "close command prompt" in query:
+            close_cmd()
+                
+        elif "play music" in query:
+            music()
+            
+        elif "youtube" in query:
+            youtube()
+            
+        elif "google" in query:
+            google()
+            
+        elif "gmail" in query:
+            gmail()
+            
+        elif "wikipedia" in query:
+            wiki()
+            
+        elif "search" in query:
+            chrome()
+            
+        elif "map" in query:
+            map()
+            
+        elif"send message" in query:
+            what_msg()
+             
+        elif "take screenshot" in query:
+            screen_shot()
+            
+        elif "bye" or "quit" in query:
+            stop()
+        speak("do you have any other work")
